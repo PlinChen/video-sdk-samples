@@ -707,7 +707,7 @@ event_loop(struct egl_manager *eman, EGLint surface_type, EGLint w, EGLint h, ch
     ffmpeg_cli.append(std::to_string(window_w));
     ffmpeg_cli.append("x");
     ffmpeg_cli.append(std::to_string(window_h));
-    ffmpeg_cli.append(" -r 25 -i - -f mp4 -q:v 5 -an -vcodec mpeg4 output.mp4");
+    ffmpeg_cli.append(" -r 25 -i - -vf vflip -f mp4 -q:v 5 -an -vcodec mpeg4 output.mp4");
     printf("\n**********\n%s\n***************\n", ffmpeg_cli.c_str());
 
     FILE *pipeout = popen(ffmpeg_cli.c_str(), "w");
