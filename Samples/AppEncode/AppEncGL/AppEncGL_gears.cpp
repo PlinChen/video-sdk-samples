@@ -703,6 +703,15 @@ event_loop(struct egl_manager *eman, EGLint surface_type, EGLint w, EGLint h, ch
     std::unique_ptr<uint8_t[]> pHostFrame(new uint8_t[nFrameSize]);
     int nFrame = 0;
 
+    std::string ffmpeg_cli("ffmpeg -y -f rawvideo -vcodec rawvideo -pix_fmt rgb24 -s ");
+    ffmpeg_cli.append(std::to_string(window_w));
+    ffmpeg_cli.append("x");
+    ffmpeg_cli.append(std::to_string(window_h));
+    ffmpeg_cli.append(" -r 25 -i - -f mp4 -q:v 5 -an -vcodec mpeg4 output.mp4");
+    printf("\n**********\n%s\n***************\n", ffmpeg_cli.c_str());
+
+    FILE *pipeout = popen(ffmpeg_cli.c_str(), "w");
+
     // ************************************* End EncodeGL ****************************
     if (surface_type == EGL_PBUFFER_BIT)
         printf("there will be no screen update if "
@@ -788,6 +797,7 @@ event_loop(struct egl_manager *eman, EGLint surface_type, EGLint w, EGLint h, ch
                 eglSwapBuffers(eman->dpy, eman->win);
                 char* ImageBuffer = new char[window_w * window_h * 3];
 	            glReadPixels(0, 0, window_w, window_h, GL_RGB, GL_UNSIGNED_BYTE, ImageBuffer);
+                fwrite(ImageBuffer, 1, window_w * window_h * 3, pipeout);
                 glTexSubImage2D(pResource->target, 0, 0, 0,
                         window_w, window_h,
                         GL_RGB, GL_UNSIGNED_BYTE, ImageBuffer);
@@ -895,7 +905,8 @@ event_loop(struct egl_manager *eman, EGLint surface_type, EGLint w, EGLint h, ch
     }
 
     enc.DestroyEncoder();
-
+    fflush(pipeout);
+    pclose(pipeout);
     fpOut.close();
 }
 
