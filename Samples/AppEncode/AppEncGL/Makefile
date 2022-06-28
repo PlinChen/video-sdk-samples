@@ -15,9 +15,10 @@ include ../../common.mk
 # Target rules
 all: build
 
-build: AppEncGL
+build: AppEncGL AppEncGL_gears
 
-LDFLAGS += -lX11 -lGL -lglut -lGLEW
+LDFLAGS += -lX11 -lGL -lglut -lGLEW -lEGL -lGLESv2
+INCLUDES += -I/home/plin/Works/WinD/gitlab.freedesktop.org/mesa/demos/src/util
 
 NvEncoder.o: ../../NvCodec/NvEncoder/NvEncoder.cpp ../../NvCodec/NvEncoder/NvEncoder.h
 	$(GCC) $(CCFLAGS) $(INCLUDES) -o $@ -c $<
@@ -31,7 +32,15 @@ AppEncGL.o: AppEncGL.cpp ../../NvCodec/NvEncoder/NvEncoderGL.h \
             ../../Utils/NvEncoderCLIOptions.h ../../Utils/Logger.h
 	$(GCC) $(CCFLAGS) $(INCLUDES) -o $@ -c $<
 
+AppEncGL_gears.o: AppEncGL_gears.cpp ../../NvCodec/NvEncoder/NvEncoderGL.h \
+            ../../NvCodec/NvEncoder/NvEncoder.h ../../Utils/NvCodecUtils.h \
+            ../../Utils/NvEncoderCLIOptions.h ../../Utils/Logger.h
+	$(GCC) $(CCFLAGS) $(INCLUDES) -o $@ -c $<
+
 AppEncGL: AppEncGL.o NvEncoder.o NvEncoderGL.o
+	$(GCC) $(CCFLAGS) -o $@ $^ $(LDFLAGS)
+
+AppEncGL_gears: AppEncGL_gears.o NvEncoder.o NvEncoderGL.o
 	$(GCC) $(CCFLAGS) -o $@ $^ $(LDFLAGS)
 
 clean:

@@ -35,3 +35,5 @@ INCLUDES += -I../../NvCodec
 INCLUDES += -I../../NvCodec/NvDecoder
 INCLUDES += -I../../NvCodec/NvEncoder
 INCLUDES += -I../../NvCodec/Common
+INCLUDES += -I../../External
+INCLUDES += -I../../External/GL
